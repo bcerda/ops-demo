@@ -1,9 +1,11 @@
 name: Build and Push Docker Image
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
+      - 'feature/**'
   pull_request:
     branches:
       - main
@@ -20,6 +22,13 @@ jobs:
       packages: write
 
     steps:
+      - name: Show Vars
+        run: |
+          echo "env.REGISTRY: ${{ env.REGISTRY }}"
+          echo "env.IMAGE_NAME: ${{ env.IMAGE_NAME }}"
+          echo "github.actor: ${{ github.actor }}"
+          echo "secrets.REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}"
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -28,7 +37,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
 
       - name: Extract Docker metadata
         id: meta
